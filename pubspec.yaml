@@ -7,7 +7,7 @@ homepage: https://github.com/Tokenyet/flutter_svg_opt
 dependencies:
   args: ^2.2.0
   path: ^1.8.0
-  xml: ^5.3.1
+  xml: ^6.0.1
 
 environment:
   sdk: ">=2.12.0-0 <3.0.0"

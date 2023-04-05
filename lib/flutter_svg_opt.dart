@@ -56,7 +56,7 @@ Future<void> processSvg(File svg) async {
   final rawXml = await svg.readAsString();
   final doc = XmlDocument.parse(rawXml);
   final svgDoc = doc.firstElementChild;
-  late final XmlElement defsElement;
+  XmlElement? defsElement;
   final notDefsElements = <XmlElement>[];
 
   if (svgDoc == null) {
@@ -71,12 +71,14 @@ Future<void> processSvg(File svg) async {
     }
   }
 
+  if (defsElement == null) return;
+
   final builder = XmlBuilder();
   builder.element(
     'svg',
     attributes: getAttributeMap(svgDoc.attributes),
     nest: () {
-      builder.xml(defsElement.outerXml);
+      builder.xml(defsElement!.outerXml);
       for (final sibling in notDefsElements) {
         builder.xml(sibling.outerXml);
       }
