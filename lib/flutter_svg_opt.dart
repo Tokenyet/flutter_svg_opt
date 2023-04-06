@@ -56,29 +56,26 @@ Future<void> processSvg(File svg) async {
   final rawXml = await svg.readAsString();
   final doc = XmlDocument.parse(rawXml);
   final svgDoc = doc.firstElementChild;
-  late final XmlElement defsElement;
-  final notDefsElements = <XmlElement>[];
 
   if (svgDoc == null) {
     return;
   }
 
-  for (final element in svgDoc.childElements) {
-    if (element.name.qualified.toLowerCase() == 'defs') {
-      defsElement = element;
-    } else {
-      notDefsElements.add(element);
-    }
-  }
+  final reordered = svgDoc.childElements.toList();
+  bool isDefs(XmlElement e) => e.name.qualified.toLowerCase() == 'defs';
+  reordered.sort((a, b) {
+    if (isDefs(a)) return -1;
+    if (isDefs(b)) return 1;
+    return 0;
+  });
 
   final builder = XmlBuilder();
   builder.element(
     'svg',
     attributes: getAttributeMap(svgDoc.attributes),
     nest: () {
-      builder.xml(defsElement.outerXml);
-      for (final sibling in notDefsElements) {
-        builder.xml(sibling.outerXml);
+      for (final element in reordered) {
+        builder.xml(element.outerXml);
       }
     },
   );
